@@ -248,16 +248,19 @@ Sao chép mẫu dưới đây cho từng thành viên:
 
 ### Đỗ Đức Đại — 2A202602725
 
-> Thành viên tự viết và tự commit phần này.
-
-- **Vai trò/phần việc được nhận:**
+- **Vai trò/phần việc được nhận:** C (Eval & Red-Team): Phụ trách thiết kế 10 case `eval_group.json` (G01 -> G10) và chạy kiểm thử 12 adversarial attacks, chịu trách nhiệm chính về phần chứng cứ của B3 và B4a trong báo cáo.
 - **Những gì tôi đã thay đổi trong repo chung:**
-- **File hoặc artifact liên quan:**
-- **Commit hash hoặc pull request:**
-- **Một quyết định kỹ thuật tôi đã đưa ra và lý do:**
-- **Khó khăn tôi gặp và cách tôi xử lý:**
-- **Điều tôi học được từ phần việc này:**
-- **Nếu làm lại, tôi sẽ cải thiện điều gì:**
+  - Thiết kế và tinh chỉnh 10 test cases (5 single-turn, 5 multi-turn) trong `data/eval_group.json` đảm bảo kiểm tra được khả năng gọi đúng công cụ của mô hình trong các tình huống thực tế của IT Helpdesk (context carryover, clarify choice, multi-turn policy, v.v.). Cập nhật lại các ID (EMP-1001, LT-411, MB-012, v.v.) và kịch bản (G03, G08) theo feedback của nhóm để tránh trùng lặp.
+  - Chạy và ghi nhận kết quả đánh giá (eval) với suite `group` và `adversarial`. Kết quả chạy cuối cùng đạt 9/10 PASS cho group eval (G07 fail do v10 chưa xử lý) và 11/12 PASS cho adversarial.
+  - Đóng góp vào `REPORT.md`: Hoàn thành bảng B3 (chi tiết 10 case group) và B4a (bằng chứng adversarial: A10, A11, A05) theo kết quả chạy eval thực tế.
+  - Cập nhật log vào `version_log.csv` cho các thí nghiệm v11, v12, v13 bị bác bỏ.
+  - Dùng AI agent (Google Antigravity) để hỗ trợ quá trình phân tích JSON và tự động sửa các file test/chạy eval tự động.
+- **File hoặc artifact liên quan:** `starter_v0/data/eval_group.json`, `starter_v0/artifacts/REPORT.md` (mục B3, B4a, C2), `starter_v0/artifacts/version_log.csv`, `starter_v0/runs/v10_B_group_openai_*`, `starter_v0/runs/v10_B_adversarial_openai_*`.
+- **Commit hash hoặc pull request:** `79d275f` (Add 10 group test cases và cập nhật eval cases cho Role C), `0349b53` (Complete Role C tasks: update eval_group, version_log, REPORT and runs). Code được push lên nhánh `dai` rồi merge vào `main`.
+- **Một quyết định kỹ thuật tôi đã đưa ra và lý do:** Tôi quyết định không thiết lập kiểm tra toàn bộ object args trong phần `expect` đối với các case clarify (như G04, G05, G07) mà chỉ kiểm tra trường `response_type` (và `options` với G07). Lý do: Để hệ thống đánh giá (Harness) tập trung vào việc định tuyến tool (routing) và loại phản hồi mà mô hình đưa ra, tránh việc evaluator đánh FAIL oan nếu LLM sinh ra nội dung (summary) khác một vài chữ so với kỳ vọng. Ngoài ra, tôi quyết định log lại các phiên bản v11, v12, v13 thay vì xóa sạch để nhóm thấy được ranh giới rất nhỏ giữa việc fix được case adversarial và phá hỏng các test case khác.
+- **Khó khăn tôi gặp và cách tôi xử lý:** Khó khăn lớn khi thiết kế test case G10 (context carry-over) vì ID thiết bị (`RM-501`) được lấy từ câu trả lời của assistant ở turn trước thay vì trực tiếp từ user. Khi chạy eval, mô hình thường hiểu sai và gọi lệnh inspect cho toàn bộ (`check="all"`). Tôi xử lý bằng cách tinh chỉnh lời thoại của user ("Hãy kiểm tra phần mềm máy đó") thay vì dùng từ "tổng thể", giúp mô hình chọn chính xác `check="software"`.
+- **Điều tôi học được từ phần việc này:** Việc viết test case cho LLM (LLM-as-a-judge hoặc rule-based evaluator) đòi hỏi tính chặt chẽ rất cao. Chỉ cần mô hình dư thừa 1 tham số như `confirmed=false` ở A10/A11, dù có thể an toàn ở tầng code (không tạo file), evaluator vẫn đánh FAIL (wrong boundary). Điều này giúp tôi nhận ra lỗ hổng ở tầng AI routing tool khác biệt thế nào với bảo mật ở hệ thống backend truyền thống.
+- **Nếu làm lại, tôi sẽ cải thiện điều gì:** Phối hợp sớm hơn với A và B để chạy test các adversarial cases (A10, A11, G07) ngay từ những vòng lặp đầu tiên, từ đó tìm ra cách diễn đạt chuẩn cho mô tả của tool `create_ticket`. Đồng thời thiết kế thêm các case tấn công tiêm nhiễm role (Role Spoofing) tinh vi hơn nữa để stress-test hệ thống.
 
 ### Nguyễn Trường Bảo — 2A202602540
 
