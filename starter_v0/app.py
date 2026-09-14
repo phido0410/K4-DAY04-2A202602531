@@ -173,10 +173,28 @@ def parse_assistant_response(
     # Check for forged / hallucinated ticket action (action: created_ticket without tool execution)
     agent_claimed_ticket = False
     if parsed_json and isinstance(parsed_json, dict):
-        if parsed_json.get("action") == "created_ticket":
+        if parsed_json.get("action") in ("created_ticket", "create_ticket"):
             agent_claimed_ticket = True
-    elif "đã tạo ticket" in cleaned.lower() or "created ticket" in cleaned.lower():
-        agent_claimed_ticket = True
+
+    # Catch claims of ticket creation in Vietnamese or English across display_text and cleaned
+    ticket_creation_patterns = [
+        r"đã\s+tạo\s+ticket",
+        r"ticket\s+đã\s+được\s+tạo",
+        r"ticket\s+được\s+tạo",
+        r"tạo\s+ticket\s+thành\s+công",
+        r"khởi\s+tạo\s+ticket\s+thành\s+công",
+        r"đã\s+khởi\s+tạo\s+ticket",
+        r"ticket\s+này\s+đã\s+được\s+tạo",
+        r"ticket\s+đã\s+tạo",
+        r"created\s+ticket",
+        r"ticket\s+(?:has\s+been\s+)?created",
+    ]
+    if not agent_claimed_ticket:
+        text_corpus = f"{cleaned} {display_text}"
+        for pattern in ticket_creation_patterns:
+            if re.search(pattern, text_corpus, re.IGNORECASE):
+                agent_claimed_ticket = True
+                break
 
     ticket_hallucinated = agent_claimed_ticket and not actual_ticket_created
 
@@ -306,6 +324,16 @@ if "transcript" not in st.session_state or st.session_state.transcript is None:
         "updated_at": now_iso(),
         "turns": [],
     }
+else:
+    # Dynamically update transcript metadata if user changes settings/artifact in sidebar
+    if artifact_ver:
+        st.session_state.transcript.update(artifact_version_dict(artifact_ver))
+    st.session_state.transcript["provider"] = provider_name
+    st.session_state.transcript["model"] = active_model
+    st.session_state.transcript["system_prompt"] = str(system_prompt_path)
+    st.session_state.transcript["tools"] = str(tools_path)
+    st.session_state.transcript["history_window"] = history_window
+    st.session_state.transcript["max_tool_rounds"] = max_tool_rounds
 
 # ----------------- MAIN UI -----------------
 st.markdown('<div class="main-header">🛠️ IT Helpdesk Agent Live Chat</div>', unsafe_allow_html=True)
@@ -425,6 +453,17 @@ if prompt := st.chat_input("Nhập yêu cầu cần trợ giúp IT..."):
         {"role": "user", "content": prompt},
     ]
 
+    # Dynamically update transcript metadata to reflect current active settings
+    if artifact_ver:
+        st.session_state.transcript.update(artifact_version_dict(artifact_ver))
+    st.session_state.transcript["provider"] = provider_name
+    st.session_state.transcript["model"] = active_model
+    st.session_state.transcript["system_prompt"] = str(system_prompt_path)
+    st.session_state.transcript["tools"] = str(tools_path)
+    st.session_state.transcript["history_window"] = history_window
+    st.session_state.transcript["max_tool_rounds"] = max_tool_rounds
+    st.session_state.transcript["updated_at"] = now_iso()
+
     turn_index = len(st.session_state.transcript.get("turns", [])) + 1
     turn_record: dict[str, Any] = {
         "turn_index": turn_index,
@@ -434,6 +473,7 @@ if prompt := st.chat_input("Nhập yêu cầu cần trợ giúp IT..."):
         "assistant_text": None,
         "rounds": [],
         "tool_events": [],
+        "artifact_version": artifact_ver.artifact_version if artifact_ver else version_label,
     }
 
     with st.chat_message("assistant"):
