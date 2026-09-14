@@ -21,7 +21,7 @@
       "assistant_text": null,
       "rounds": [],
       "tool_events": [],
-      "error": "AuthenticationError: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-***************************************************************************************************************************************************************************KEY=. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}",
+      "error": "AuthenticationError: Error code: 401 - {'error': {'message': 'Incorrect API key provided: [REDACTED]=. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}",
       "ended_at": "2026-09-14T20:25:51"
     },
     {
