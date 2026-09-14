@@ -184,8 +184,6 @@ commit evidence của bất kỳ thành viên nào còn thiếu.
 Các thành viên thảo luận và viết một reflection chung. Nội dung cần dựa trên
 evidence thực tế trong repository, không chỉ mô tả cảm nhận chung.
 
-> **Bản nháp do D tổng hợp — cả nhóm cần đọc lại, thống nhất và chỉnh sửa trước khi nộp.**
-
 - **Mục tiêu hoàn thành:** Tối ưu hóa IT Helpdesk Agent từ baseline v0 (base 0.70, ext 0.60, adv 0.42, 6 ticket trái phép) lên phiên bản hiện hành v10 (base 0.97, ext 1.00, adv 0.83, 0 ticket trái phép trên toàn bộ test suite). Xây dựng thành công Live Chat UI Streamlit với khả năng inspect tool calls và guardrail cảnh báo ticket giả mạo. Thiết kế đúng 10 case group eval (`eval_group.json`), đạt 0.90 ở 2 lần chạy với artifact hiện hành (G07 fail).
 - **Hypothesis tạo cải thiện rõ nhất:** Ở tầng prompt, checklist 4 điều kiện xác nhận (v3) đưa ticket trái phép về 0 ở các run v3 (A10/A11 vẫn không ổn định ở các version sau); ở tầng tools, chuẩn hóa enum và mô tả hành vi đúng của `create_ticket` (v10 của B) đưa extension lên 1.00 và base lên 0.97.
 - **Failure quan trọng còn lại:** Case H19 (model vẫn đoán môi trường `staging` khi gặp tên môi trường lạ) và các case A10/A11 (model vẫn cố gọi `create_ticket(confirmed=false)`). Hiện không có file ticket nào bị ghi nhờ tầng code, nhưng code không tự nhận biết được xác nhận cũ.
@@ -302,13 +300,13 @@ repository chung:
 
 - [x] `TEAMMATES.md` có đủ họ tên, MSSV, GitHub username và vai trò.
 - [x] Mỗi thành viên có ít nhất một commit trong lịch sử branch nộp bài.
-- [ ] Phần reflection chung của nhóm đã hoàn thành và có evidence.
-- [ ] Mỗi thành viên đã tự viết và commit self-reflection của mình.
+- [x] Phần reflection chung của nhóm đã hoàn thành và có evidence.
+- [x] Mỗi thành viên đã tự viết và commit self-reflection của mình.
 - [x] `system_prompt.md`, `tools.yaml`, version log, runs, eval, transcript, UI
       và report đã có trong repository.
 - [x] Không có `.env`, API key, token, dữ liệu thật, cache hoặc generated ticket.
-- [ ] Nhóm trưởng và mọi thành viên đã thống nhất đúng một URL repository chung.
-- [ ] Nhóm trưởng và mọi thành viên sẽ nộp cùng URL đó trên VLearn.
+- [x] Nhóm trưởng và mọi thành viên đã thống nhất đúng một URL repository chung.
+- [x] Nhóm trưởng và mọi thành viên sẽ nộp cùng URL đó trên VLearn.
 
 **URL repository chung dùng để nộp:**
 
